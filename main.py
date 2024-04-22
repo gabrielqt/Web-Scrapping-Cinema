@@ -2,8 +2,11 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait    
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
 import os
 import requests
+from time import sleep
 from bs4 import BeautifulSoup
 import pandas as pd
 os.system('cls')
@@ -27,7 +30,19 @@ print()
 user = int(input('Digite a opção: '))
 
 
+if user == 1:
+    title = str(input('Digite o título do filme/série que deseja saber mais: '))
+    driver = webdriver.Firefox()
+    driver.get('https://www.rottentomatoes.com/')
+    sleep(2)
+    search = driver.find_element(By.XPATH, '//*[@id="header-main"]/search-algolia/search-algolia-controls/input')
+    search.send_keys(title)
+    sleep(2)
+    search.send_keys(Keys.ENTER)
+    sleep(2)
+    driver.find_element(By.CSS_SELECTOR, '#search-results > search-page-result:nth-child(2) > ul:nth-child(4) > search-page-media-row:nth-child(1) > a:nth-child(2)').click()
 
+    
 if user == 4:
     
     driver = webdriver.Firefox()
