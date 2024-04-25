@@ -9,6 +9,22 @@ import requests
 from time import sleep
 from bs4 import BeautifulSoup
 import pandas as pd
+
+def get_imdb_rating():
+    
+    infomovie = BeautifulSoup(driver.page_source, 'html.parser')
+    
+    ratings = infomovie.find_all('div', {'class': 'jw-scoring-listing__rating'})
+    for rating in ratings:
+        count += 1
+        if count ==2:
+            imdb = rating.get_text()
+    imdb = imdb.split()
+    imdb = imdb[0]
+    return imdb
+
+
+
 count = 0
 
 os.system('cls')
@@ -21,7 +37,6 @@ print()
 print('.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.')
 print()
 print('\033[34m1 - Detalhes sobre algum filme/série')
-print('1 - Consultar detalhes sobre filme/série')
 print('2 - Comparar nota de dois filmes ou séries')
 print('3 - Top 10 mais populares atualmente')
 print('4 - Consultar ator')
@@ -33,9 +48,12 @@ user = int(input('Digite a opção: '))
 
 if user == 1:
     
+    ########### GETING THE MOVIE AND SEARCHING FOR HIM
+    
     title = str(input('Digite o título do filme/série que deseja saber mais: '))
     driver = webdriver.Firefox()
     driver.get('https://www.justwatch.com/')
+    driver.minimize_window
     sleep(2)
     search = WebDriverWait(driver,10).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[3]/div/div[2]/div[1]/div[1]/ion-searchbar/div/input')))
     search.click()
@@ -45,28 +63,28 @@ if user == 1:
     WebDriverWait(driver,10).until(EC.presence_of_element_located((By.CLASS_NAME, 'search-result-item__details'))).click()
     sleep(1)
     
-    ################################################################
+    ############   GETTING THE DATA       ##############
     
     infomovie = BeautifulSoup(driver.page_source, 'html.parser')
+    
+    
+    
     actors = infomovie.find_all('span', attrs = {'class': 'title-credit-name'})
     actorslist = list()
-
-    
     for actor in actors:
         actorslist.append(actor.get_text())
-    imdb = infomovie.find('img', {'alt':'IMDB'}).parent.find('div')
-
-    ratings = infomovie.find_all('div', {'class': 'jw-scoring-listing__rating'})
-    for rating in ratings:
-        count += 1
-        if count ==2:
-            imdb = rating.get_text()
-    imdb = imdb.split()
-    imdb = imdb[0]
+        
+    imdb = get_imdb_rating()
     
     title = infomovie.find('div', {'data-testid':"titleBlock"})
-    print(title.get_text())
-        
+    title = title.get_text()
+    
+    
+    print(infomovie.find(By.XPATH,'/html/body/div/div[4]/div/div[2]/div/div[2]/div[2]/article/div').get_text())
+    
+    ############ I GOT THE DATA, I JUST NEED TO SHOW IT MORE PRETTY      ##############
+    
+    
 if user == 3:
     
     driver = webdriver.Firefox()
