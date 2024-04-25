@@ -10,8 +10,11 @@ from time import sleep
 from bs4 import BeautifulSoup
 import pandas as pd
 
+count = 0
+
 def get_imdb_rating():
     
+    global count
     infomovie = BeautifulSoup(driver.page_source, 'html.parser')
     
     ratings = infomovie.find_all('div', {'class': 'jw-scoring-listing__rating'})
@@ -25,7 +28,7 @@ def get_imdb_rating():
 
 
 
-count = 0
+
 
 os.system('cls')
 count = 0
