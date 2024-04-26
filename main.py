@@ -11,6 +11,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 
 count = 0
+countactor = 0
 
 def get_imdb_rating():
     
@@ -56,7 +57,7 @@ if user == 1:
     title = str(input('Digite o título do filme/série que deseja saber mais: '))
     driver = webdriver.Firefox()
     driver.get('https://www.justwatch.com/')
-    driver.minimize_window
+    driver.minimize_window()
     sleep(2)
     search = WebDriverWait(driver,10).until(EC.presence_of_element_located((By.XPATH, '/html/body/div/div[3]/div/div[2]/div[1]/div[1]/ion-searchbar/div/input')))
     search.click()
@@ -70,11 +71,12 @@ if user == 1:
     
     infomovie = BeautifulSoup(driver.page_source, 'html.parser')
     
-    
-    
     actors = infomovie.find_all('span', attrs = {'class': 'title-credit-name'})
     actorslist = list()
     for actor in actors:
+        countactor += 1
+        if countactor == 7:
+            break
         actorslist.append(actor.get_text())
         
     imdb = get_imdb_rating()
@@ -82,11 +84,24 @@ if user == 1:
     title = infomovie.find('div', {'data-testid':"titleBlock"})
     title = title.get_text()
     
+    sinopse = infomovie.find('h3', {'dir':'ltr'}).get_text()
     
-    print(infomovie.find(By.XPATH,'/html/body/div/div[4]/div/div[2]/div/div[2]/div[2]/article/div').get_text())
-    
+    details = infomovie.find_all('div', {'class':'detail-infos__value'})
+    genre = details[2].get_text()
+    duration = details[3].get_text()
     ############ I GOT THE DATA, I JUST NEED TO SHOW IT MORE PRETTY      ##############
-    
+    print('---------------------------------')
+    print()
+    print(f'\t{title}')
+    print()
+    print(f'  Rating IMDB - {imdb}')
+    print(f'  Genre - {genre}')
+    print(f'  Duration - {duration}')
+    print('   Actors:')
+    for actor in actorslist:
+        print(f'|{actor}| ', end='')
+    print()
+    print(f'  Sinopse: \n   {sinopse}')    
     
 if user == 3:
     
