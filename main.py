@@ -64,7 +64,7 @@ if user == 1:
     sleep(2)
     search.send_keys(title)
     sleep(1)
-    WebDriverWait(driver,10).until(EC.presence_of_element_located((By.CLASS_NAME, 'search-result-item__details'))).click()
+    WebDriverWait(driver,10).until(EC.presence_of_element_located((By.CLASS_NAME, 'search-result-item__details-title'))).click()
     sleep(1)
     
     ############   GETTING THE DATA       ##############
@@ -84,7 +84,11 @@ if user == 1:
     title = infomovie.find('div', {'data-testid':"titleBlock"})
     title = title.get_text()
     
-    sinopse = infomovie.find('h3', {'dir':'ltr'}).get_text()
+    try:
+        sinopse = infomovie.find('p', {'class':'text-wrap-pre-line mt-0'}).get_text()
+    except:
+        sinopse = infomovie.find('h3', {'dir':'ltr'}).get_text()
+        
     
     details = infomovie.find_all('div', {'class':'detail-infos__value'})
     genre = details[2].get_text()
@@ -99,7 +103,7 @@ if user == 1:
     print(f'  Duration - {duration}')
     print('   Actors:')
     for actor in actorslist:
-        print(f'|{actor}| ', end='')
+        print(f'   |{actor}| ', end='')
     print()
     print(f'  Sinopse: \n   {sinopse}')    
     
