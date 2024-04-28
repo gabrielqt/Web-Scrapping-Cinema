@@ -9,6 +9,7 @@ import requests
 from time import sleep
 from bs4 import BeautifulSoup
 import pandas as pd
+import re
 
 count = 0
 countactor = 0
@@ -41,10 +42,9 @@ print()
 print('.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.')
 print()
 print('\033[34m1 - Detalhes sobre algum filme/série')
-print('2 - Comparar nota de dois filmes ou séries')
-print('3 - Top 10 mais populares atualmente')
-print('4 - Consultar ator')
-print('5 - SAIR.\033[m')
+print('2 - Top 10 mais populares atualmente')
+print('3 - Consultar ator')
+print('4 - SAIR.\033[m')
 print()
 
 user = int(input('Digite a opção: '))
@@ -66,7 +66,7 @@ if user == 1:
     sleep(1)
     WebDriverWait(driver,10).until(EC.presence_of_element_located((By.CLASS_NAME, 'search-result-item__details-title'))).click()
     sleep(1)
-    
+
     ############   GETTING THE DATA       ##############
     
     infomovie = BeautifulSoup(driver.page_source, 'html.parser')
@@ -84,7 +84,7 @@ if user == 1:
     title = infomovie.find('div', {'data-testid':"titleBlock"})
     title = title.get_text()
     
-    try:
+    try:                      #some movies/shows have a different sinopse's tag
         sinopse = infomovie.find('p', {'class':'text-wrap-pre-line mt-0'}).get_text()
     except:
         sinopse = infomovie.find('h3', {'dir':'ltr'}).get_text()
@@ -107,7 +107,10 @@ if user == 1:
     print()
     print(f'  Sinopse: \n   {sinopse}')    
     
-if user == 3:
+
+
+
+if user == 2:
     
     driver = webdriver.Firefox()
     driver.get('https://www.imdb.com/chart/moviemeter/')
@@ -142,3 +145,45 @@ if user == 3:
         data.to_excel('top10.xlsx',index=False)
         print('Excel Criado!')
         os.system('start top10.xlsx')
+        
+        
+        
+if user == 3:
+    actor = str(input('Digite o nome completo do ator: '))
+    driver = webdriver.Firefox()
+    # driver.maximize_window()
+    
+    driver.get('https://www.themoviedb.org/?language=pt-BR')
+    
+    search = driver.find_element(By.ID, 'inner_search_v4')
+    search.send_keys(actor, Keys.ENTER)
+    sleep(1)
+    driver.find_element(By.ID, 'person').click()
+    sleep(1)
+    pagesearching = BeautifulSoup(driver.page_source, 'html.parser')
+    
+#How i got acess the actor page:
+
+    tagsid = pagesearching.select('a[id^=person]')  #1° i found for tags that there are 'id = person'
+    stringid = str(tagsid[2])       #2° I need to get the index two because the one was another tag
+    stringnodataid = re.sub(r'data-id="[^"]+"', '', stringid) # 3° here i need to 'remove' the attrs data-id that was conflitting with 4 step
+    id_ = re.search(r'id="(\w+)"', stringnodataid) # 4° here i get what have after id=, i.e. i get the id
+
+    driver.find_element(By.ID, id_.group(1)).click()
+    
+    pageactor = BeautifulSoup(driver.page_source, 'html.parser')
+    
+    print()
+    
+    name = pageactor.find('h2', {'class':"title"}).get_text()
+    biography = pageactor.find('div', {'class':"text line-clamp-6"}).get_text()
+    movies = pageactor.find_all('a', {'class':"title"})
+    
+    print(name)
+    print(biography)
+    print('Filmes pelo qual ficou reconhecido:')
+    for movie in movies:
+        print(movie.get_text(), end=' - ')
+    
+    driver.quit()
+    
