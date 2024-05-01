@@ -1,4 +1,4 @@
-![image](https://github.com/gabrielqt/Web-Scrapping-Cinema/assets/159674773/f38c79dc-e7ef-4b4a-a4e6-ebe978a4bdfc)# Web Scrapping Movies/Shows/Actors
+Web Scrapping Movies/Shows/Actors
 
 # Option 1
 receive a input (movie/serie) from the user.
